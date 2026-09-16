@@ -358,6 +358,21 @@ if: needs.changes.outputs.api == 'true'</code></pre></div>
 </section>
 
 <!-- 14 -->
+<section class="slide videoslide" data-title="Video">
+  <h2 class="sh">One more thing…</h2>
+  <div class="vidwrap">
+    <video id="talkVideo" playsinline preload="metadata" controls>
+      <!-- relative first (same host as the deck), gt.tc as the fallback -->
+      <source src="hamster-video.mp4" type="video/mp4">
+      <source src="https://git-vit.gt.tc/hamster-video.mp4" type="video/mp4">
+      Your browser cannot play this video.
+    </video>
+    <button class="vidplay" id="vidPlay" aria-label="Play the video">▶</button>
+  </div>
+  <p class="sub center"><kbd>Space</kbd> play / pause &nbsp;·&nbsp; <kbd>→</kbd> when you're done</p>
+</section>
+
+<!-- 15 -->
 <section class="slide thanks" data-title="Thanks">
   <div class="hero-glow"></div>
   <h1 class="mega"><span class="word">Thank you!</span></h1>

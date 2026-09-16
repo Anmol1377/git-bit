@@ -20,6 +20,7 @@ function go(n, dir = n > i ? 1 : -1) {
   n = Math.max(0, Math.min(slides.length - 1, n));
   if (n === i || busy) return;
   busy = true;
+  document.querySelectorAll('video').forEach(v => v.pause());   // never leave audio running behind a slide
   const from = slides[i], to = slides[n];
   i = n;
   to.classList.add('live');
@@ -49,6 +50,12 @@ function enter(s) {
   if (t === 'Why GitHub') countUp($$('[data-count]', s));
   if (t === 'The waste') countUp([['#mA', 21], ['#mB', 6], ['#mC', 600]].map(([sel, v]) => { const el = $(sel); el.dataset.count = v; return el; }));
   if (t === 'Thanks') confetti();
+  if (t === 'Video') {
+    const v = $('#talkVideo');
+    v.currentTime = 0;
+    v.play().then(() => $('#vidPlay').hidden = true)
+            .catch(() => $('#vidPlay').hidden = false);   // blocked without a gesture — show the button
+  }
 }
 function countUp(els) {
   els.forEach(el => {
@@ -64,6 +71,12 @@ $('#prev').onclick = () => go(i - 1);
 addEventListener('keydown', e => {
   if (e.target.isContentEditable || /input|textarea/i.test(e.target.tagName)) return;
   const k = e.key;
+  if (k === ' ' && slides[i].dataset.title === 'Video') {      // space is play/pause here, not next
+    e.preventDefault();
+    const v = $('#talkVideo');
+    v.paused ? v.play().then(() => $('#vidPlay').hidden = true).catch(() => {}) : v.pause();
+    return;
+  }
   if (k === 'ArrowRight' || k === 'ArrowDown' || k === ' ' || k === 'PageDown') { e.preventDefault(); go(i + 1); }
   if (k === 'ArrowLeft' || k === 'ArrowUp' || k === 'PageUp') { e.preventDefault(); go(i - 1); }
   if (k === 'Home') go(0);
@@ -308,6 +321,13 @@ $$('#filetree .f').forEach(f => f.onclick = () => {
   $('#filterYaml code').textContent = FYAML[f.dataset.p];
 });
 $('#filetree .f').click();
+
+/* ------------------------------------------------------ 14 · video slide */
+const vid = $('#talkVideo'), vidBtn = $('#vidPlay');
+vidBtn.onclick = () => vid.play().then(() => vidBtn.hidden = true).catch(() => {});
+vid.onplay = () => vidBtn.hidden = true;
+vid.onpause = () => vidBtn.hidden = false;
+vid.onended = () => { vidBtn.hidden = false; go(i + 1); };   // roll straight into the thank-you slide
 
 /* -------------------------------------------------------- 13 · quiz join */
 // always the gt.tc copy: the quiz talks to MySQL and must be same-origin with the API
