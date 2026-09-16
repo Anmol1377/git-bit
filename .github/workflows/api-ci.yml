@@ -1,0 +1,27 @@
+# PATH FILTER DEMO 2/3 — a Go service. A CSS change never wakes this up.
+name: api-ci
+
+on:
+  push:
+    paths:
+      - 'monorepo/api/**'
+      - 'monorepo/shared/**'        # the API's payload contract lives there
+      - '.github/workflows/api-ci.yml'
+  pull_request:
+    paths:
+      - 'monorepo/api/**'
+      - 'monorepo/shared/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: monorepo/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+      - run: go vet ./...
+      - run: go test ./... -v

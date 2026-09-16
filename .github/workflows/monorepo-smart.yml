@@ -1,0 +1,91 @@
+# THE GROWN-UP VERSION (slide 10).
+#
+# Three separate path-filtered files work, but they duplicate the `shared/**`
+# rule in every file — miss it once and you ship a broken build silently.
+# Here ONE job decides what changed, everything else guards on its outputs.
+name: monorepo-smart
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      api: ${{ steps.filter.outputs.api }}
+      worker: ${{ steps.filter.outputs.worker }}
+      shared: ${{ steps.filter.outputs.shared }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            shared:
+              - 'monorepo/shared/**'
+            frontend:
+              - 'monorepo/frontend/**'
+              - 'monorepo/shared/**'      # the dependency edge, declared once
+            api:
+              - 'monorepo/api/**'
+              - 'monorepo/shared/**'
+            worker:
+              - 'monorepo/worker/**'
+              - 'monorepo/shared/**'
+
+      - name: Explain the plan
+        run: |
+          echo "### What this push actually affects" >> $GITHUB_STEP_SUMMARY
+          echo "| service | runs |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| frontend | ${{ steps.filter.outputs.frontend }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| api | ${{ steps.filter.outputs.api }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| worker | ${{ steps.filter.outputs.worker }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| shared touched | ${{ steps.filter.outputs.shared }} |" >> $GITHUB_STEP_SUMMARY
+
+  frontend:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm test
+        working-directory: monorepo/frontend
+
+  api:
+    needs: changes
+    if: needs.changes.outputs.api == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.22' }
+      - run: go test ./...
+        working-directory: monorepo/api
+
+  worker:
+    needs: changes
+    if: needs.changes.outputs.worker == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm test
+        working-directory: monorepo/worker
+
+  # A single required status check that is green even when every job above
+  # was skipped — otherwise branch protection blocks "docs only" PRs forever.
+  ci-ok:
+    needs: [frontend, api, worker]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "frontend=${{ needs.frontend.result }} api=${{ needs.api.result }} worker=${{ needs.worker.result }}"
+          [[ "${{ contains(needs.*.result, 'failure') }}" == "false" ]] || exit 1

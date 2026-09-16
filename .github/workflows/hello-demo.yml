@@ -1,0 +1,37 @@
+# The "click a button, watch a machine do work" demo.
+# Actions tab → Hello, Actions → Run workflow.
+name: Hello, Actions
+
+on:
+  workflow_dispatch:
+    inputs:
+      who:
+        description: Who are we saying hello to?
+        default: VIT
+        required: true
+      shout:
+        description: Uppercase it?
+        type: boolean
+        default: false
+
+jobs:
+  say-hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print the greeting
+        run: |
+          MSG="Hello, ${{ inputs.who }} 👋"
+          if [ "${{ inputs.shout }}" = "true" ]; then MSG=$(echo "$MSG" | tr '[:lower:]' '[:upper:]'); fi
+          echo "$MSG"
+
+      - name: Show what the runner actually is
+        run: |
+          echo "OS       : $(uname -a)"
+          echo "CPUs     : $(nproc)"
+          echo "Node     : $(node -v)"
+          echo "Triggered by ${{ github.actor }} on ${{ github.ref_name }}"
+
+      - name: Write to the job summary
+        run: |
+          echo "### Hello, ${{ inputs.who }} 👋" >> $GITHUB_STEP_SUMMARY
+          echo "Run #${{ github.run_number }} — triggered by @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY

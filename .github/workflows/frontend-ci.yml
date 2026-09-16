@@ -1,0 +1,26 @@
+# PATH FILTER DEMO 1/3 — touch monorepo/frontend/** and only this one runs.
+name: frontend-ci
+
+on:
+  push:
+    paths:
+      - 'monorepo/frontend/**'
+      - 'monorepo/shared/**'        # frontend imports shared → it must rebuild too
+      - '.github/workflows/frontend-ci.yml'
+  pull_request:
+    paths:
+      - 'monorepo/frontend/**'
+      - 'monorepo/shared/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: monorepo/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm test

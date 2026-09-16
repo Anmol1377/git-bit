@@ -1,0 +1,26 @@
+# PATH FILTER DEMO 3/3.
+name: worker-ci
+
+on:
+  push:
+    paths:
+      - 'monorepo/worker/**'
+      - 'monorepo/shared/**'
+      - '.github/workflows/worker-ci.yml'
+  pull_request:
+    paths:
+      - 'monorepo/worker/**'
+      - 'monorepo/shared/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: monorepo/worker
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm test

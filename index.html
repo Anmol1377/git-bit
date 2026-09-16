@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GitHub, Actions &amp; CI/CD — Anmol</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐙</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/deck.css">
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+<div class="grain"></div>
+
+<header class="hud">
+  <div class="hud-brand"><span class="mark">⬢</span> GitHub &amp; Actions</div>
+  <nav class="dots" id="dots"></nav>
+  <div class="hud-count"><span id="cur">1</span>/<span id="tot">14</span></div>
+</header>
+<div class="progress"><i id="bar"></i></div>
+
+<main id="deck">
+
+<!-- 1 -->
+<section class="slide hero" data-title="Hello">
+  <div class="hero-glow"></div>
+  <h1 class="mega">
+    <span class="word">GitHub</span>
+    <span class="word grad">is not</span>
+    <span class="word grad">a backup drive.</span>
+  </h1>
+  <p class="lede">A hands-on session on <b>GitHub</b>, <b>Actions</b>, <b>Workflows</b>, <b>CI/CD</b> and <b>Monorepos</b>.</p>
+  <div class="hero-cta">
+    <kbd>→</kbd> <span>or scroll to begin</span>
+  </div>
+  <div class="hero-chips">
+    <span class="chip">14 slides</span><span class="chip">4 live demos</span><span class="chip">1 quiz 🏆</span>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="slide" data-title="What is GitHub">
+  <h2 class="sh"><em>01</em> What is GitHub?</h2>
+  <p class="sub">Click each layer. GitHub is what you get when you keep stacking things on top of Git.</p>
+  <div class="layers" id="layers">
+    <button class="layer" data-k="git">
+      <span class="layer-ic">🌱</span>
+      <span class="layer-t">Git</span>
+      <span class="layer-d">A version control system. Runs on your laptop. Tracks every change as a commit.</span>
+    </button>
+    <button class="layer" data-k="host">
+      <span class="layer-ic">☁️</span>
+      <span class="layer-t">+ Hosting</span>
+      <span class="layer-d">Your repo lives on a server everyone can reach. <code>git push</code> / <code>git pull</code>.</span>
+    </button>
+    <button class="layer" data-k="collab">
+      <span class="layer-ic">🤝</span>
+      <span class="layer-t">+ Collaboration</span>
+      <span class="layer-d">Issues, Pull Requests, reviews, discussions, permissions. The social layer.</span>
+    </button>
+    <button class="layer" data-k="auto">
+      <span class="layer-ic">⚙️</span>
+      <span class="layer-t">+ Automation</span>
+      <span class="layer-d">Actions, Packages, Pages, Security scanning. Your repo can now <i>do things</i>.</span>
+    </button>
+  </div>
+  <div class="callout" id="layerOut">
+    <b>Git ≠ GitHub.</b> Git is the tool. GitHub is the platform built around it — hosting + collaboration + automation.
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="slide" data-title="Why GitHub">
+  <h2 class="sh"><em>02</em> Why GitHub?</h2>
+  <p class="sub">Drag the slider: life <b>without</b> it → life <b>with</b> it.</p>
+  <div class="compare">
+    <div class="cmp-col bad">
+      <h3>Without</h3>
+      <ul>
+        <li><code>final_v2_FINAL_usethis.zip</code></li>
+        <li>"who broke prod?" — nobody knows</li>
+        <li>Code review over WhatsApp screenshots</li>
+        <li>Deploy = someone SSHs in on a Friday</li>
+        <li>Onboarding a dev takes a week</li>
+      </ul>
+    </div>
+    <div class="cmp-col good">
+      <h3>With GitHub</h3>
+      <ul>
+        <li>One history, every change attributed</li>
+        <li><code>git blame</code> answers it in 2 seconds</li>
+        <li>PRs with inline review + required checks</li>
+        <li>Deploy = merge. Automated, repeatable</li>
+        <li>Clone, read the README, ship day one</li>
+      </ul>
+    </div>
+    <input type="range" id="wipe" min="0" max="100" value="50" aria-label="compare">
+  </div>
+  <div class="stat-row">
+    <div class="stat"><b data-count="100">0</b><span>M+ developers</span></div>
+    <div class="stat"><b data-count="420">0</b><span>M+ repositories</span></div>
+    <div class="stat"><b data-count="90">0</b><span>% of Fortune 100</span></div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="slide" data-title="Actions">
+  <h2 class="sh"><em>03</em> What is GitHub Actions?</h2>
+  <p class="sub">A robot that watches your repo. <b>Something happens → GitHub runs your code on a fresh machine.</b></p>
+  <div class="flowline" id="flow">
+    <div class="node ev"><span>EVENT</span><b id="evName">push</b><small>you do something</small></div>
+    <div class="arrow"></div>
+    <div class="node wf"><span>WORKFLOW</span><b>.github/workflows/*.yml</b><small>matches the event</small></div>
+    <div class="arrow"></div>
+    <div class="node rn"><span>RUNNER</span><b>ubuntu-latest</b><small>clean VM, spun up for you</small></div>
+    <div class="arrow"></div>
+    <div class="node ok"><span>RESULT</span><b>✅ / ❌</b><small>on your commit &amp; PR</small></div>
+  </div>
+  <p class="sub center">Pick an event to fire it:</p>
+  <div class="pills" id="events">
+    <button class="pill on" data-ev="push">push</button>
+    <button class="pill" data-ev="pull_request">pull_request</button>
+    <button class="pill" data-ev="schedule">schedule (cron)</button>
+    <button class="pill" data-ev="workflow_dispatch">workflow_dispatch</button>
+    <button class="pill" data-ev="issues">issues</button>
+    <button class="pill" data-ev="release">release</button>
+  </div>
+  <div class="callout">Free minutes on public repos. On private repos you get a monthly quota — that is <i>why</i> slide 09 matters.</div>
+</section>
+
+<!-- 5 -->
+<section class="slide" data-title="Workflows">
+  <h2 class="sh"><em>04</em> What is a Workflow?</h2>
+  <p class="sub">A YAML file in <code>.github/workflows/</code>. <b>Hover / tap any line</b> to see what it does.</p>
+  <div class="split">
+    <pre class="code anatomy" id="anatomy"><code><span data-x="A">name: CI</span>
+
+<span data-x="B">on:</span>
+<span data-x="B">  push:</span>
+<span data-x="B">    branches: [main]</span>
+
+<span data-x="C">jobs:</span>
+<span data-x="D">  test:</span>
+<span data-x="E">    runs-on: ubuntu-latest</span>
+<span data-x="F">    steps:</span>
+<span data-x="G">      - uses: actions/checkout@v4</span>
+<span data-x="H">      - uses: actions/setup-node@v4</span>
+<span data-x="H">        with: { node-version: 20 }</span>
+<span data-x="I">      - run: npm ci</span>
+<span data-x="I">      - run: npm test</span></code></pre>
+    <div class="anno" id="anno">
+      <div class="anno-card" data-y="A"><b>name</b><p>What shows up in the Actions tab. Cosmetic, but future-you will thank you.</p></div>
+      <div class="anno-card" data-y="B"><b>on</b><p>The trigger. Events, branches, tags, paths, cron. This is the whole "when".</p></div>
+      <div class="anno-card" data-y="C"><b>jobs</b><p>A workflow has 1..n jobs. Jobs run <b>in parallel</b> by default — use <code>needs:</code> to chain them.</p></div>
+      <div class="anno-card" data-y="D"><b>job id</b><p><code>test</code> is the id you reference in <code>needs:</code> and in branch protection rules.</p></div>
+      <div class="anno-card" data-y="E"><b>runs-on</b><p>Which machine. <code>ubuntu-latest</code>, <code>windows-latest</code>, <code>macos-latest</code>, or your own self-hosted runner.</p></div>
+      <div class="anno-card" data-y="F"><b>steps</b><p>Run <b>in order</b>, in the same workspace. First failure stops the job.</p></div>
+      <div class="anno-card" data-y="G"><b>uses</b><p>Pull in a reusable Action from the Marketplace. <code>checkout</code> clones your repo — the runner starts empty.</p></div>
+      <div class="anno-card" data-y="H"><b>with</b><p>Inputs for that Action. Think function arguments.</p></div>
+      <div class="anno-card" data-y="I"><b>run</b><p>Just shell. If it runs in your terminal, it runs here.</p></div>
+      <div class="anno-card idle" data-y="_"><b>👆 Hover the YAML</b><p>Workflow → Jobs → Steps. That is the entire mental model.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="slide" data-title="Build one">
+  <h2 class="sh"><em>05</em> Let's create one, live</h2>
+  <p class="sub">Click the chips. The YAML writes itself — this is exactly what you'd commit.</p>
+  <div class="split builder">
+    <div class="picker">
+      <div class="pick-row"><label>When</label>
+        <div class="pills" data-group="trigger">
+          <button class="pill on" data-v="push">on push</button>
+          <button class="pill" data-v="pr">on pull_request</button>
+          <button class="pill" data-v="cron">every night</button>
+          <button class="pill" data-v="manual">manual button</button>
+        </div>
+      </div>
+      <div class="pick-row"><label>Where</label>
+        <div class="pills" data-group="os">
+          <button class="pill on" data-v="ubuntu-latest">ubuntu</button>
+          <button class="pill" data-v="macos-latest">macos</button>
+          <button class="pill" data-v="windows-latest">windows</button>
+        </div>
+      </div>
+      <div class="pick-row"><label>Do</label>
+        <div class="pills multi" data-group="steps">
+          <button class="pill on" data-v="node">setup node</button>
+          <button class="pill on" data-v="install">install deps</button>
+          <button class="pill on" data-v="test">run tests</button>
+          <button class="pill" data-v="lint">lint</button>
+          <button class="pill" data-v="build">build</button>
+          <button class="pill" data-v="deploy">deploy 🚀</button>
+        </div>
+      </div>
+      <div class="steps-note">
+        <b>3 steps to ship it:</b>
+        <ol>
+          <li>Create <code>.github/workflows/ci.yml</code></li>
+          <li>Paste this. Commit. Push.</li>
+          <li>Open the <b>Actions</b> tab — it is already running.</li>
+        </ol>
+      </div>
+    </div>
+    <pre class="code out"><code id="yamlOut"></code><button class="copy" id="copyYaml">copy</button></pre>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="slide" data-title="CI/CD">
+  <h2 class="sh"><em>06</em> What is CI/CD?</h2>
+  <div class="defs">
+    <div class="def"><b>CI — Continuous Integration</b><p>Every push gets merged into the main line and <b>automatically verified</b>: build, lint, test. Catch the break in 3 minutes, not 3 weeks.</p></div>
+    <div class="def"><b>CD — Continuous Delivery / Deployment</b><p><i>Delivery</i>: every green build is <b>ready</b> to ship, one click away. <i>Deployment</i>: it ships itself, no click.</p></div>
+  </div>
+  <p class="sub center">Hit the button. Watch a real pipeline shape.</p>
+  <div class="pipe-wrap">
+    <button class="btn big" id="runPipe">git push origin main</button>
+    <div class="pipeline" id="pipeline">
+      <div class="stage" data-s="checkout">Checkout</div>
+      <div class="stage" data-s="install">Install</div>
+      <div class="stage" data-s="lint">Lint</div>
+      <div class="stage" data-s="test">Test</div>
+      <div class="stage" data-s="build">Build</div>
+      <div class="stage" data-s="deploy">Deploy</div>
+    </div>
+    <pre class="term" id="term"><code>$ waiting for a push…</code></pre>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="slide" data-title="Monorepo">
+  <h2 class="sh"><em>07</em> What is a Monorepo?</h2>
+  <p class="sub">One repository. Many independent services. One history, one PR, one review.</p>
+  <div class="split">
+    <pre class="code tree"><code>monorepo/
+├── <b class="c-fe">frontend/</b>   # React
+├── <b class="c-api">api/</b>        # Go
+├── <b class="c-wk">worker/</b>     # Node
+├── <b class="c-sh">shared/</b>     # types, utils, protos
+└── .github/workflows/</code></pre>
+    <div class="cards">
+      <div class="card up"><b>👍 Why teams like it</b><ul><li>One atomic PR changes API + frontend together</li><li>No version-bump dance across 4 repos</li><li>Shared code is just an import</li><li>One CODEOWNERS, one CI config, one place to look</li></ul></div>
+      <div class="card down"><b>👎 What it costs you</b><ul><li>CI gets slow and expensive — fast</li><li>Naive setup: every push builds <i>everything</i></li><li>Blast radius of shared code is real</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="slide" data-title="The waste">
+  <h2 class="sh"><em>08</em> The problem: every push builds everything</h2>
+  <p class="sub">You fixed one CSS typo in <code>frontend/</code>. Watch what a naive pipeline does.</p>
+  <div class="waste">
+    <div class="waste-row"><span>Frontend build + tests</span><i class="bar" style="--w:72%">6m 12s</i></div>
+    <div class="waste-row"><span>Go API build + tests</span><i class="bar waste-x" style="--w:55%">4m 40s &nbsp;❌ wasted</i></div>
+    <div class="waste-row"><span>Worker tests</span><i class="bar waste-x" style="--w:38%">3m 05s &nbsp;❌ wasted</i></div>
+    <div class="waste-row"><span>Docker images ×3</span><i class="bar waste-x" style="--w:88%">7m 30s &nbsp;❌ wasted</i></div>
+  </div>
+  <div class="math">
+    <div class="m"><b id="mA">0</b><span>min per push</span></div>
+    <div class="m"><b id="mB">0</b><span>min actually needed</span></div>
+    <div class="m bad"><b id="mC">0</b><span>min burned, ×40 pushes/day</span></div>
+  </div>
+  <div class="callout warn">It is not just money. It is <b>feedback latency</b> — and a queue of developers waiting on a runner to free up.</div>
+</section>
+
+<!-- 10 -->
+<section class="slide" data-title="Path filters">
+  <h2 class="sh"><em>09</em> The fix: path filters</h2>
+  <p class="sub"><b>Click a file</b> you changed. See exactly which pipelines wake up.</p>
+  <div class="split filters">
+    <div class="filetree" id="filetree">
+      <button class="f c-fe" data-p="frontend">frontend/src/Button.tsx</button>
+      <button class="f c-fe" data-p="frontend">frontend/package.json</button>
+      <button class="f c-api" data-p="api">api/handler.go</button>
+      <button class="f c-wk" data-p="worker">worker/queue.js</button>
+      <button class="f c-sh" data-p="shared">shared/types.ts</button>
+      <button class="f" data-p="docs">README.md</button>
+    </div>
+    <div class="runs">
+      <div class="run" data-r="frontend"><span class="led"></span> frontend-ci</div>
+      <div class="run" data-r="api"><span class="led"></span> api-ci</div>
+      <div class="run" data-r="worker"><span class="led"></span> worker-ci</div>
+      <div class="run" data-r="none"><span class="led"></span> nothing runs 💤</div>
+      <pre class="code sm" id="filterYaml"><code></code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- 11 -->
+<section class="slide" data-title="Shared code">
+  <h2 class="sh"><em>10</em> The hard case: <span class="c-sh">shared/</span></h2>
+  <p class="sub">One file. Three consumers. Path filters alone will lie to you.</p>
+  <div class="blast" id="blast">
+    <div class="src">shared/types.ts</div>
+    <div class="rays"><i></i><i></i><i></i></div>
+    <div class="targets">
+      <div class="t c-fe">frontend <small>imports the type</small></div>
+      <div class="t c-api">api <small>generates from the schema</small></div>
+      <div class="t c-wk">worker <small>parses the same payload</small></div>
+    </div>
+  </div>
+  <div class="cards three">
+    <div class="card"><b>1. Fan-out filter</b><p>List <code>shared/**</code> in <i>every</i> service's paths. Dumb, works on day one, over-triggers forever.</p><pre class="code xs"><code>paths:
+  - 'api/**'
+  - 'shared/**'</code></pre></div>
+    <div class="card"><b>2. Detect &amp; dispatch</b><p>One <code>changes</code> job uses <code>dorny/paths-filter</code>, outputs booleans, downstream jobs guard on <code>if:</code>. One source of truth.</p><pre class="code xs"><code>needs: changes
+if: needs.changes.outputs.api == 'true'</code></pre></div>
+    <div class="card"><b>3. Real build graph</b><p>Let a build tool answer "what does this actually affect": <b>Nx</b>, <b>Turborepo</b>, <b>Bazel</b>. Dependency-aware + remote cache.</p><pre class="code xs"><code>npx turbo run test \
+  --filter=...[origin/main]</code></pre></div>
+  </div>
+  <div class="callout">Rule of thumb: <b>path filters until it hurts, then a build graph.</b> Both are in <code>.github/workflows/</code> of this repo — go read them.</div>
+</section>
+
+<!-- 12 -->
+<section class="slide" data-title="This repo">
+  <h2 class="sh"><em>11</em> Everything here is real</h2>
+  <p class="sub">This deck ships from the same repo it describes. Open the Actions tab and watch.</p>
+  <div class="cards four">
+    <div class="card"><b>📄 pages.yml</b><p>Builds &amp; deploys this deck + quiz to GitHub Pages on every push to <code>main</code>. It is running right now.</p></div>
+    <div class="card"><b>👋 hello-demo.yml</b><p><code>workflow_dispatch</code> with inputs. The "click a button, watch a VM boot" demo.</p></div>
+    <div class="card"><b>🎯 frontend/api/worker-ci.yml</b><p>Three files, three <code>paths:</code> filters. Real Node and Go tests in <code>monorepo/</code>.</p></div>
+    <div class="card"><b>🧠 monorepo-smart.yml</b><p>One <code>changes</code> job, <code>dorny/paths-filter</code>, <code>if:</code> guards — and a <code>ci-ok</code> gate that survives skipped jobs.</p></div>
+  </div>
+  <div class="callout ok">Try it live: edit <code>monorepo/api/handler.go</code>, push, and only <b>api-ci</b> turns green. Touch <code>monorepo/shared/</code> and all three do.</div>
+</section>
+
+<!-- 13 -->
+<section class="slide quizslide" data-title="Quiz">
+  <h2 class="sh"><em>12</em> Quiz time 🏆</h2>
+  <p class="sub">15 questions, easy → hard. Scan, play on your phone — the whole room lands on one live leaderboard.</p>
+  <div class="quizbox">
+    <div class="qb-left">
+      <div class="join">
+        <span>Scan or open</span>
+        <b id="joinUrl">…</b>
+      </div>
+      <div id="qr" class="qr"></div>
+      <div class="row2">
+        <a class="btn" href="quiz/" target="_blank" rel="noopener">Play the quiz →</a>
+        <a class="btn ghost" href="quiz/host.html" target="_blank" rel="noopener">Live results board →</a>
+      </div>
+    </div>
+    <div class="qb-right">
+      <ol class="qrules">
+        <li>Open the link, type your name</li>
+        <li>30s per question · +10 base, +bonus for difficulty and speed</li>
+        <li>Every phone writes to one <b>MySQL</b> database via a small PHP API</li>
+        <li>The big screen updates <b>live</b> as the room answers</li>
+      </ol>
+      <p class="sub" style="font-size:13px">One attempt per person — once an answer is in, it is final. The server grades it, so the answers never reach your browser.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 14 -->
+<section class="slide thanks" data-title="Thanks">
+  <div class="hero-glow"></div>
+  <h1 class="mega"><span class="word">Thank you!</span></h1>
+  <p class="lede">Questions? Let's talk — or ping me any time.</p>
+  <div class="links">
+    <a class="linkcard" href="https://linkedin.com/in/anmol18/" target="_blank" rel="noopener">
+      <span class="li">in</span><b>linkedin.com/in/anmol18</b><small>Say hi, I reply</small>
+    </a>
+    <a class="linkcard" href="https://github.com/Anmol1377/" target="_blank" rel="noopener">
+      <span class="gh">⬢</span><b>github.com/Anmol1377</b><small>This deck + all workflows</small>
+    </a>
+  </div>
+  <div class="qrthanks">
+    <div class="qr on"><img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&amp;margin=0&amp;data=https%3A%2F%2Flinkedin.com%2Fin%2Fanmol18%2F" width="134" height="134" alt="QR code linking to linkedin.com/in/anmol18" onerror="this.parentNode.classList.remove('on')"></div>
+    <div>
+      <b>Scan to connect 👋</b>
+      <p class="sub" style="font-size:13.5px;margin-top:4px">linkedin.com/in/anmol18<br>Slides, quiz and every workflow are in the repo.</p>
+    </div>
+  </div>
+  <p class="outro">Now go open <code>.github/workflows/</code> and break something. That is how you learn it.</p>
+  <button class="btn ghost" id="confettiBtn">🎉 one more time</button>
+</section>
+
+</main>
+
+<button class="nav prev" id="prev" aria-label="previous">‹</button>
+<button class="nav next" id="next" aria-label="next">›</button>
+<canvas id="confetti"></canvas>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="assets/deck.js"></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+# Drop an exported results JSON into results/ and this turns it into a leaderboard,
+# then commits it back. A workflow that writes to its own repo — good demo material.
+name: quiz-results
+
+on:
+  push:
+    paths:
+      - 'results/*.json'         # note: NOT leaderboard.md, or this would trigger itself
+      - 'scripts/leaderboard.mjs'
+  workflow_dispatch:
+
+concurrency:                    # phones publishing at once => one run, not twenty
+  group: quiz-results
+  cancel-in-progress: true
+
+permissions:
+  contents: write                # needed to commit the generated leaderboard back
+
+jobs:
+  leaderboard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22        # node:sqlite is built in — zero dependencies
+
+      - name: Check the question bank
+        run: node scripts/check-questions.mjs
+
+      - name: Build the leaderboard
+        run: node scripts/leaderboard.mjs
+
+      - name: Commit it back
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results/leaderboard.md
+          git diff --staged --quiet && { echo "No change."; exit 0; }
+          git commit -m "quiz: update leaderboard [skip ci]"
+          git push

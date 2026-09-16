@@ -1,0 +1,197 @@
+[
+  {
+    "id": 1,
+    "d": "easy",
+    "q": "What is Git, at its core?",
+    "a": [
+      "A distributed version control system",
+      "A cloud storage service",
+      "A programming language",
+      "A code editor"
+    ],
+    "c": 0,
+    "why": "Git tracks changes to files over time. GitHub is the platform built around Git."
+  },
+  {
+    "id": 2,
+    "d": "easy",
+    "q": "Where must GitHub Actions workflow files live?",
+    "a": [
+      "/workflows",
+      "/actions",
+      ".github/workflows/",
+      ".git/hooks/"
+    ],
+    "c": 2,
+    "why": "Anything else and GitHub simply will not see it."
+  },
+  {
+    "id": 3,
+    "d": "easy",
+    "q": "Workflow files are written in which format?",
+    "a": [
+      "JSON",
+      "YAML",
+      "TOML",
+      "XML"
+    ],
+    "c": 1,
+    "why": "YAML — indentation matters, and it will absolutely bite you."
+  },
+  {
+    "id": 4,
+    "d": "easy",
+    "q": "CI stands for…",
+    "a": [
+      "Code Inspection",
+      "Continuous Integration",
+      "Container Init",
+      "Commit Index"
+    ],
+    "c": 1,
+    "why": "Continuous Integration: merge often, verify automatically."
+  },
+  {
+    "id": 5,
+    "d": "easy",
+    "q": "Which key defines WHEN a workflow runs?",
+    "a": [
+      "when:",
+      "trigger:",
+      "on:",
+      "run:"
+    ],
+    "c": 2,
+    "why": "on: push / pull_request / schedule / workflow_dispatch …"
+  },
+  {
+    "id": 6,
+    "d": "medium",
+    "q": "A runner starts empty. Which action puts your code on it?",
+    "a": [
+      "actions/clone@v4",
+      "actions/checkout@v4",
+      "actions/setup-git@v4",
+      "actions/fetch@v4"
+    ],
+    "c": 1,
+    "why": "Forget checkout and your build fails with 'no such file or directory'."
+  },
+  {
+    "id": 7,
+    "d": "medium",
+    "q": "By default, multiple JOBS in one workflow run…",
+    "a": [
+      "In parallel",
+      "One after another, top to bottom",
+      "Only the first one runs",
+      "Alphabetically"
+    ],
+    "c": 0,
+    "why": "Jobs are parallel by default. Steps inside a job are sequential."
+  },
+  {
+    "id": 8,
+    "d": "medium",
+    "q": "Which key makes job `deploy` wait for job `test`?",
+    "a": [
+      "after: test",
+      "depends_on: test",
+      "needs: test",
+      "requires: test"
+    ],
+    "c": 2,
+    "why": "needs: builds the dependency graph between jobs."
+  },
+  {
+    "id": 9,
+    "d": "medium",
+    "q": "A monorepo is…",
+    "a": [
+      "A repo with only one file",
+      "One repository holding many projects/services",
+      "A private repository",
+      "A repo with no branches"
+    ],
+    "c": 1,
+    "why": "frontend/ + api/ + worker/ + shared/ — one history, one PR."
+  },
+  {
+    "id": 10,
+    "d": "medium",
+    "q": "How do you reference a repository secret in a workflow?",
+    "a": [
+      "$SECRET_NAME",
+      "${{ secrets.SECRET_NAME }}",
+      "{{ env.SECRET_NAME }}",
+      "%SECRET_NAME%"
+    ],
+    "c": 1,
+    "why": "Never hardcode it. GitHub also masks the value in logs."
+  },
+  {
+    "id": 11,
+    "d": "hard",
+    "q": "Which key stops a monorepo workflow from running on unrelated changes?",
+    "a": [
+      "paths:",
+      "filter:",
+      "only:",
+      "scope:"
+    ],
+    "c": 0,
+    "why": "on.push.paths — the single highest-ROI line in a monorepo CI config."
+  },
+  {
+    "id": 12,
+    "d": "hard",
+    "q": "`workflow_dispatch` gives you…",
+    "a": [
+      "A nightly cron run",
+      "A manual 'Run workflow' button with optional inputs",
+      "A webhook to an external service",
+      "A required status check"
+    ],
+    "c": 1,
+    "why": "Great for deploys, backfills and live demos."
+  },
+  {
+    "id": 13,
+    "d": "hard",
+    "q": "You change `shared/types.ts`, used by frontend, api and worker. Path filters on only `api/**` will…",
+    "a": [
+      "Correctly run all three pipelines",
+      "Run nothing — a silent gap that ships a broken build",
+      "Run only the frontend",
+      "Fail the workflow with an error"
+    ],
+    "c": 1,
+    "why": "This is the hard case: shared code needs fan-out filters, a changes-detection job, or a real build graph (Nx/Turborepo/Bazel)."
+  },
+  {
+    "id": 14,
+    "d": "hard",
+    "q": "What does `strategy.matrix` do?",
+    "a": [
+      "Retries the job on failure",
+      "Runs the same job many times across combinations (OS × version)",
+      "Splits a job across many repos",
+      "Encrypts the job logs"
+    ],
+    "c": 1,
+    "why": "One job definition → node 18/20/22 × ubuntu/macos/windows, all in parallel."
+  },
+  {
+    "id": 15,
+    "d": "hard",
+    "q": "In a monorepo, which CD strategy is usually the most efficient?",
+    "a": [
+      "Rebuild and redeploy every service on every merge",
+      "Deploy only the services whose code (or dependencies) actually changed",
+      "Deploy manually once a month",
+      "Give every service its own repository again"
+    ],
+    "c": 1,
+    "why": "Change detection + a dependency graph. Deploy the blast radius, nothing more."
+  }
+]

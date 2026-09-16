@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GitHub Quiz — 15 questions</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/deck.css">
+<style>
+body{overflow:auto}
+.wrap{max-width:820px;margin:0 auto;padding:calc(26px + env(safe-area-inset-top,0px)) 18px 60px;position:relative;z-index:5;min-height:100vh;display:flex;flex-direction:column;justify-content:center;gap:20px}
+.scr{display:none}.scr.on{display:grid;gap:18px}
+.topbar{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:12px;color:var(--dim)}
+.topbar .who{margin-left:auto;color:var(--blue)}
+.qbar{height:5px;border-radius:99px;background:#161b22;overflow:hidden}
+.qbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--purp));transition:width .4s}
+.timer{height:3px;border-radius:99px;background:#161b22;overflow:hidden}
+.timer i{display:block;height:100%;width:100%;background:var(--green);transform-origin:left}
+.timer.warn i{background:var(--red)}
+h2.q{font-size:clamp(21px,3.4vw,34px);line-height:1.25;letter-spacing:-.02em;margin:0}
+.tag{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;padding:4px 10px;border-radius:99px;border:1px solid currentColor}
+.tag.easy{color:var(--green)}.tag.medium{color:var(--orange)}.tag.hard{color:var(--red)}
+.opts{display:grid;gap:11px}
+.opt{display:flex;gap:14px;align-items:center;text-align:left;cursor:pointer;color:var(--tx);font-size:clamp(14px,1.7vw,17px);
+  border:1px solid var(--line);background:var(--panel);border-radius:14px;padding:16px 18px;transition:.22s;font-family:inherit}
+.opt:hover:not(:disabled){transform:translateX(7px);border-color:var(--blue)}
+.opt .k{font-family:var(--mono);font-size:12px;width:26px;height:26px;flex:0 0 auto;border-radius:8px;
+  display:grid;place-items:center;background:var(--panel2);border:1px solid var(--line);color:var(--dim)}
+.opt.right{border-color:var(--green);background:rgba(63,185,80,.13)}
+.opt.right .k{background:var(--green);color:#04130a;border-color:var(--green)}
+.opt.wrong{border-color:var(--red);background:rgba(248,81,73,.12)}
+.opt.wrong .k{background:var(--red);color:#2a0705;border-color:var(--red)}
+.opt:disabled{cursor:default;opacity:.55}.opt.right,.opt.wrong{opacity:1}
+.fb{display:none;border-left:3px solid var(--blue);background:rgba(88,166,255,.08);padding:13px 16px;border-radius:0 12px 12px 0;font-size:14.5px;color:var(--dim);line-height:1.55}
+.fb.on{display:block}
+.fb b{color:var(--tx)}
+.pts{font-family:var(--mono);color:var(--green);font-weight:700}
+.field{display:flex;gap:10px;flex-wrap:wrap}
+input[type=text]{flex:1;min-width:200px;font:inherit;font-size:17px;color:var(--tx);background:var(--panel);
+  border:1px solid var(--line);border-radius:12px;padding:15px 18px;outline:0}
+input[type=text]:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(88,166,255,.15)}
+.final{text-align:center;display:grid;gap:8px;justify-items:center}
+.final .big{font-size:clamp(56px,13vw,120px);font-weight:900;letter-spacing:-.05em;line-height:1;
+  background:linear-gradient(92deg,var(--blue),var(--purp),var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+.review{display:grid;gap:7px;text-align:left;width:100%;margin-top:10px}
+.rv{display:flex;gap:11px;align-items:flex-start;font-size:13.5px;color:var(--dim);border:1px solid var(--line);
+  border-radius:10px;padding:10px 13px;background:var(--panel)}
+.rv b{font-family:var(--mono);flex:0 0 auto}
+.rv.ok{border-color:rgba(63,185,80,.35)}.rv.no{border-color:rgba(248,81,73,.3)}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.mini{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;text-align:center;margin-top:6px}
+.mini b{display:block;font-size:26px;font-weight:900;color:var(--blue)}
+.mini span{font-size:12px;color:var(--dim)}
+.lb{display:grid;gap:7px;width:100%}
+.lbrow{display:grid;grid-template-columns:34px 1fr auto;gap:12px;align-items:center;font-size:14px;
+  border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--panel)}
+.lbrow.me{border-color:var(--blue);background:rgba(88,166,255,.1)}
+.lbrow .r{font-family:var(--mono);color:var(--dim)}
+.lbrow .s{font-family:var(--mono);color:var(--green);font-weight:700}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div class="wrap">
+
+  <!-- join -->
+  <section class="scr on" id="scrJoin">
+    <h1 class="mega" style="font-size:clamp(38px,7vw,74px)"><span class="word">GitHub</span><span class="word grad">Quiz.</span></h1>
+    <p class="lede">15 questions · easy → hard · scored on accuracy <b>and</b> speed.</p>
+    <div class="field">
+      <input type="text" id="name" placeholder="Your name" maxlength="24" autocomplete="off">
+      <button class="btn big" id="start">Start →</button>
+    </div>
+    <p class="sub" style="font-size:13px">Answers are stored in a real SQLite database in your browser. Open <a href="host.html" style="color:var(--blue)">the live leaderboard</a> on the big screen — it updates as you answer.</p>
+  </section>
+
+  <!-- question -->
+  <section class="scr" id="scrQ">
+    <div class="topbar">
+      <span id="qn">Question 1 / 15</span>
+      <span class="tag easy" id="tag">easy</span>
+      <span class="who" id="who"></span>
+    </div>
+    <div class="qbar"><i id="prog"></i></div>
+    <div class="timer" id="timerWrap"><i id="timer"></i></div>
+    <h2 class="q" id="qtext"></h2>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="fb"></div>
+    <div class="row"><button class="btn" id="nextQ" style="display:none">Next question →</button></div>
+  </section>
+
+  <!-- done -->
+  <section class="scr" id="scrDone">
+    <div class="final">
+      <p class="sub">Final score</p>
+      <div class="big" id="finalScore">0</div>
+      <p class="sub" id="finalLine"></p>
+      <div class="mini">
+        <div><b id="fCorrect">0</b><span>correct of 15</span></div>
+        <div><b id="fRank">—</b><span>rank this session</span></div>
+        <div><b id="fSpeed">0s</b><span>avg answer time</span></div>
+      </div>
+      <div class="lb" id="miniBoard"></div>
+      <div class="review" id="review"></div>
+      <div class="row">
+        <a class="btn" href="host.html">Live leaderboard →</a>
+        <a class="btn ghost" href="../">Back to the deck</a>
+        <button class="btn ghost" id="export">Export my result (.sqlite)</button>
+      </div>
+    </div>
+  </section>
+</div>
+<canvas id="confetti"></canvas>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script type="module">
+import * as API from './api.js';
+
+const $ = s => document.querySelector(s);
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const TIME = 30000;                       // ms per question
+let QUESTIONS = [], player, idx = 0, t0 = 0, timer, locked = false;
+const mine = [];
+
+const esc = s => String(s).replace(/[<>&]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]));
+function oops(msg) {
+  $('#scrJoin .field').insertAdjacentHTML('afterend',
+    `<div class="fb on" style="border-color:var(--red)"><b>⚠ ${esc(msg)}</b></div>`);
+}
+
+try {
+  QUESTIONS = await API.questions();
+  $('#start').disabled = false;
+} catch (err) {
+  $('#start').disabled = true;
+  oops(err.message);
+}
+
+$('#start').onclick = async () => {
+  const n = $('#name').value.trim();
+  if (!n) return $('#name').focus();
+  $('#start').disabled = true;
+  try {
+    const { player: p, answered } = await API.join(n);
+    player = p;
+    // the server owns the attempt: rejoining resumes, it never restarts
+    answered.forEach(a => mine.push({ qid: a.qid, ok: !!a.correct, choice: a.choice, ms: a.ms, pts: a.points }));
+    idx = answered.length;
+    if (idx >= QUESTIONS.length) { finish(); lockedNote(); }
+    else { show('#scrQ'); render(); }
+  } catch (err) {
+    $('#start').disabled = false;
+    oops(err.message);
+  }
+};
+$('#name').onkeydown = e => { if (e.key === 'Enter') $('#start').click(); };   // never return false here — it cancels typing
+$('#nextQ').onclick = () => { idx++; idx >= QUESTIONS.length ? finish() : render(); };
+
+function lockedNote() {
+  const n = document.createElement('p');
+  n.className = 'sub';
+  n.style.cssText = 'font-size:13px;font-family:var(--mono);color:var(--orange)';
+  n.textContent = '🔒 Submitted. One attempt per person — your answers are final.';
+  $('#review').before(n);
+}
+function show(id) {
+  document.querySelectorAll('.scr').forEach(s => s.classList.toggle('on', '#' + s.id === id));
+}
+function render() {
+  const q = QUESTIONS[idx];
+  locked = false;
+  $('#who').textContent = '👤 ' + player.name;
+  $('#qn').textContent = `Question ${idx + 1} / ${QUESTIONS.length}`;
+  $('#prog').style.width = (idx / QUESTIONS.length * 100) + '%';
+  $('#tag').textContent = q.d; $('#tag').className = 'tag ' + q.d;
+  $('#qtext').textContent = q.q;
+  $('#fb').className = 'fb'; $('#nextQ').style.display = 'none';
+
+  const opts = $('#opts');
+  opts.innerHTML = '';
+  q.a.forEach((text, k) => {
+    const b = document.createElement('button');
+    b.className = 'opt';
+    b.innerHTML = `<span class="k">${'ABCD'[k]}</span><span>${esc(text)}</span>`;
+    b.onclick = () => pick(k);
+    opts.append(b);
+  });
+  if (!reduced) {
+    gsap.fromTo('#qtext', { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: .45 });
+    gsap.fromTo('.opt', { autoAlpha: 0, x: -18 }, { autoAlpha: 1, x: 0, duration: .4, stagger: .06, delay: .1 });
+  }
+  t0 = performance.now();
+  startTimer();
+}
+function startTimer() {
+  clearTimeout(timer);
+  const el = $('#timer');
+  $('#timerWrap').classList.remove('warn');
+  el.style.transition = 'none'; el.style.transform = 'scaleX(1)';
+  requestAnimationFrame(() => {
+    el.style.transition = `transform ${TIME}ms linear`;
+    el.style.transform = 'scaleX(0)';
+  });
+  setTimeout(() => $('#timerWrap').classList.add('warn'), TIME * .7);
+  timer = setTimeout(() => !locked && pick(-1), TIME);
+}
+async function pick(choice) {
+  if (locked) return;
+  locked = true;
+  clearTimeout(timer);
+  $('#timer').style.transition = 'none';
+  const q = QUESTIONS[idx], ms = Math.round(performance.now() - t0);
+
+  [...$('#opts').children].forEach(b => b.disabled = true);
+  const fb = $('#fb');
+  fb.className = 'fb on';
+  fb.textContent = 'Saving…';
+
+  let res;
+  try {
+    res = await API.answer(player.id, q.id, choice, ms);   // the server decides right/wrong
+  } catch (err) {
+    fb.innerHTML = `<b>⚠ ${esc(err.message)}</b> Your answer did not save — check the connection.`;
+    locked = false;
+    [...$('#opts').children].forEach(b => b.disabled = false);
+    return;
+  }
+  mine.push({ qid: q.id, ok: res.correct, choice, ms, pts: res.points });
+
+  [...$('#opts').children].forEach((b, k) => {
+    if (k === res.correctIndex) b.classList.add('right');
+    else if (k === choice) b.classList.add('wrong');
+  });
+  fb.innerHTML = choice === -1
+    ? `<b>⏱ Out of time.</b> ${esc(res.why)}`
+    : res.correct ? `<b>✅ Correct.</b> <span class="pts">+${res.points} pts</span> — ${esc(res.why)}`
+                  : `<b>❌ Not quite.</b> ${esc(res.why)}`;
+  if (res.correct && !reduced) gsap.fromTo('.opt.right', { scale: .97 }, { scale: 1, duration: .4, ease: 'back.out(3)' });
+  $('#prog').style.width = ((idx + 1) / QUESTIONS.length * 100) + '%';
+  const btn = $('#nextQ');
+  btn.style.display = '';
+  btn.textContent = idx + 1 >= QUESTIONS.length ? 'See my score 🏆' : 'Next question →';
+}
+async function finish() {
+  show('#scrDone');
+  const score = mine.reduce((s, m) => s + m.pts, 0);
+  const correct = mine.filter(m => m.ok).length;
+  const avg = mine.length ? mine.reduce((s, m) => s + m.ms, 0) / mine.length / 1000 : 0;
+
+  $('#fCorrect').textContent = correct;
+  $('#fSpeed').textContent = avg.toFixed(1) + 's';
+  $('#finalLine').textContent =
+    correct >= 13 ? 'Ship it. You could run this session.' :
+    correct >= 9  ? 'Solid. Go write a workflow today.' :
+    correct >= 5  ? 'Good start — rewatch slides 04–09.' :
+                    'No shame. Open .github/workflows/ and poke around.';
+  reduced ? $('#finalScore').textContent = score
+          : gsap.fromTo('#finalScore', { innerText: 0 }, { innerText: score, duration: 1.4, snap: { innerText: 1 }, ease: 'power2.out' });
+
+  try {                                        // rank + top five, live from the server
+    const { board, correct: key } = await API.state();
+    const rank = board.findIndex(r => +r.id === +player.id) + 1;
+    $('#fRank').textContent = rank ? `#${rank}` : '—';
+    $('#miniBoard').innerHTML = board.slice(0, 5).map((r, n) => `
+      <div class="lbrow ${+r.id === +player.id ? 'me' : ''}">
+        <span class="r">${['🥇', '🥈', '🥉'][n] ?? '#' + (n + 1)}</span>
+        <span>${esc(r.name)}</span><span class="s">${r.score}</span>
+      </div>`).join('');
+    $('#review').innerHTML = mine.map(m => {
+      const q = QUESTIONS.find(x => x.id === m.qid);
+      const right = key.find(k => k.id === m.qid)?.c;
+      return `<div class="rv ${m.ok ? 'ok' : 'no'}"><b>${m.ok ? '✅' : '❌'} Q${q.id}</b><span>${esc(q.q)}<br><span style="color:var(--green)">${esc(q.a[right])}</span></span></div>`;
+    }).join('');
+  } catch { /* score still shows — the board is a bonus */ }
+
+  confetti(correct >= 9 ? 180 : 60);
+}
+
+/* ---- background + confetti (shared look with the deck) ---- */
+const bg = document.getElementById('bg'), bx = bg.getContext('2d');
+let pts = [], W, H;
+const sizeBg = () => {
+  const d = devicePixelRatio || 1;
+  W = bg.width = innerWidth * d; H = bg.height = innerHeight * d;
+  bg.style.cssText = `position:fixed;inset:0;z-index:0;width:${innerWidth}px;height:${innerHeight}px`;
+  pts = Array.from({ length: 34 }, () => ({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - .5) * .25 * d, vy: (Math.random() - .5) * .25 * d, r: (Math.random() * 1.6 + .6) * d }));
+};
+const drawBg = () => {
+  bx.clearRect(0, 0, W, H);
+  for (const p of pts) {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0 || p.x > W) p.vx *= -1;
+    if (p.y < 0 || p.y > H) p.vy *= -1;
+    bx.beginPath(); bx.arc(p.x, p.y, p.r, 0, 7); bx.fillStyle = 'rgba(88,166,255,.45)'; bx.fill();
+  }
+  requestAnimationFrame(drawBg);
+};
+sizeBg(); addEventListener('resize', sizeBg); if (!reduced) drawBg();
+
+const cc = document.getElementById('confetti'), cx = cc.getContext('2d');
+cc.style.cssText = 'position:fixed;inset:0;z-index:60;pointer-events:none';
+let bits = [];
+function confetti(n = 120) {
+  if (reduced) return;
+  cc.width = innerWidth; cc.height = innerHeight;
+  const cols = ['#58a6ff', '#3fb950', '#bc8cff', '#f778ba', '#d29922'];
+  const first = !bits.length;
+  bits = bits.concat(Array.from({ length: n }, () => ({
+    x: Math.random() * innerWidth, y: -20 - Math.random() * 300, w: 5 + Math.random() * 7, h: 8 + Math.random() * 9,
+    vy: 2.2 + Math.random() * 3.4, vx: (Math.random() - .5) * 2.2, a: Math.random() * 7,
+    va: (Math.random() - .5) * .3, c: cols[Math.random() * cols.length | 0] })));
+  if (first) tick();
+}
+function tick() {
+  cx.clearRect(0, 0, cc.width, cc.height);
+  bits = bits.filter(b => b.y < cc.height + 30);
+  for (const b of bits) {
+    b.x += b.vx; b.y += b.vy; b.a += b.va;
+    cx.save(); cx.translate(b.x, b.y); cx.rotate(b.a); cx.fillStyle = b.c;
+    cx.fillRect(-b.w / 2, -b.h / 2, b.w, b.h); cx.restore();
+  }
+  bits.length ? requestAnimationFrame(tick) : cx.clearRect(0, 0, cc.width, cc.height);
+}
+</script>
+</body>
+</html>

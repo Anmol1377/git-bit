@@ -1,0 +1,35 @@
+# Ships this deck + quiz to https://anmol1377.github.io/git-bit/ on every push to main.
+# This is the workflow the talk is standing on.
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:            # a README typo should not redeploy the site
+      - '**.md'
+  workflow_dispatch:          # …and a "Run workflow" button, for the live demo
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:                  # never let two deploys race
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - name: Upload the site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .              # static site, no build step needed
+      - id: deployment
+        uses: actions/deploy-pages@v4
