@@ -34,7 +34,9 @@ try {
     [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
   );
 } catch (PDOException $e) {
-  fail(500, 'database connection failed');
+  // The real reason matters more than hiding it — no credentials appear in
+  // these messages, just things like "Unknown database" or "Access denied".
+  fail(500, 'database connection failed: ' . $e->getMessage());
 }
 
 /* ------------------------------------------------------------------ schema */
