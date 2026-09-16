@@ -1,0 +1,6 @@
+# config.php holds the database credentials. Apache executes .php so it never
+# leaks as text, but if PHP is ever disabled on the host this stops the file
+# being served as plain text.
+<Files "config.php">
+  Require all denied
+</Files>

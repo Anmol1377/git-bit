@@ -1,6 +1,6 @@
 /* Thin client for api/quiz.php. Every device talks to the same MySQL database,
    which is what makes the dashboard genuinely live across phones. */
-import { API } from './config.js';
+import { API, HOST, sameOrigin } from './config.js';
 
 export const configured = () => !API.includes('REPLACE-ME');
 
@@ -14,8 +14,11 @@ async function call(action, body) {
   let json;
   try { json = JSON.parse(text); }
   catch {
-    // InfinityFree serves an HTML interstitial to requests it does not like
-    throw new Error(r.ok ? 'Server replied with HTML, not JSON — check the API URL' : `Server error ${r.status}`);
+    // InfinityFree answers with a JS challenge page until its cookie is set,
+    // and that cookie is never sent cross-site.
+    if (!sameOrigin())
+      throw new Error(`Open the quiz from ${HOST}/quiz/ — it cannot run cross-origin`);
+    throw new Error(r.ok ? 'Server replied with HTML, not JSON — is api/quiz.php uploaded?' : `Server error ${r.status}`);
   }
   if (!r.ok) throw new Error(json.error ?? `Server error ${r.status}`);
   return json;

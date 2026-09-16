@@ -4,9 +4,9 @@ An interactive, animation-heavy session deck that replaces slides — plus a liv
 quiz backed by MySQL, plus the GitHub Actions workflows the talk is actually about, running
 in this very repo.
 
-**Live:** https://anmol1377.github.io/git-bit/
-**Quiz:** https://anmol1377.github.io/git-bit/quiz/
-**Live results:** https://anmol1377.github.io/git-bit/quiz/host.html
+**Deck:** https://anmol1377.github.io/git-bit/ (also at https://git-vit.gt.tc/)
+**Quiz:** https://git-vit.gt.tc/quiz/
+**Live results:** https://git-vit.gt.tc/quiz/host.html
 
 The deck is static HTML + CSS + vanilla JS. The quiz adds one PHP file and a MySQL database.
 
@@ -56,31 +56,31 @@ api/
 
 ### Setting it up
 
-1. **Upload** `api/quiz.php`, `api/questions.json` and your own `api/config.php` to your
-   host (InfinityFree, or any PHP + MySQL host) so they sit at `/api/quiz.php`.
+The quiz runs on **https://git-vit.gt.tc/** (InfinityFree), not on GitHub Pages — see the
+warning below for why. Push the whole repo to the web root there.
 
-   ```bash
-   cp api/config.sample.php api/config.php   # fill in your MySQL details, then upload it
-   ```
+1. **Create `api/config.php` on the host.** It is gitignored, so it is not in this repo and
+   will not arrive with your upload. Copy `api/config.sample.php`, fill in the MySQL details
+   from your InfinityFree panel, and upload it as `api/config.php`.
 
-   `api/config.php` is gitignored — credentials never reach this public repo. The tables
-   (`quiz_sessions`, `quiz_players`, `quiz_answers`) are created automatically on first request.
+2. **Check the API answers.** Open `https://git-vit.gt.tc/api/quiz.php?action=state` in a
+   browser — you should see JSON starting with `{"session":`. The tables
+   (`quiz_sessions`, `quiz_players`, `quiz_answers`) create themselves on that first request.
 
-2. **Point the front end at it** — edit `quiz/config.js`:
-
-   ```js
-   export const API = 'https://your-site.infinityfreeapp.com/api/quiz.php';
-   ```
-
-3. Push. Open the quiz, open `host.html` on the projector, done.
+3. **Play** at https://git-vit.gt.tc/quiz/ and put https://git-vit.gt.tc/quiz/host.html on
+   the projector.
 
 Set `host_key` in `api/config.php` to something only you know — the dashboard asks for it
 before starting a new session, so nobody can wipe the board mid-talk.
 
-> Note on free hosts: some of them (InfinityFree included) put an anti-bot interstitial in
-> front of requests. If the quiz reports *"Server replied with HTML, not JSON"*, that is what
-> happened — open `api/quiz.php?action=state` in a browser once to clear it, or move the API
-> to a host without the interstitial.
+> **Why the quiz is not on GitHub Pages.** InfinityFree answers every request with a
+> JavaScript challenge page and only serves real content once its `__test` cookie is set.
+> That cookie is not sent on cross-site requests, so a copy of the quiz running on
+> `github.io` would receive the challenge HTML instead of JSON and fail. Loading the quiz
+> from `gt.tc` solves the challenge on page load, and every `fetch` after that is
+> same-origin. `quiz/config.js` uses a relative API path whenever the origin matches.
+>
+> The deck itself is static and works from either host.
 
 ### Archiving a session
 

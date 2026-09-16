@@ -310,10 +310,8 @@ $$('#filetree .f').forEach(f => f.onclick = () => {
 $('#filetree .f').click();
 
 /* -------------------------------------------------------- 13 · quiz join */
-const PAGES = 'https://anmol1377.github.io/git-bit/quiz/';
-const quizUrl = location.protocol.startsWith('http')
-  ? new URL('quiz/', location.href).href
-  : PAGES;                                   // opened from disk → point at the published site
+// always the gt.tc copy: the quiz talks to MySQL and must be same-origin with the API
+const quizUrl = 'https://git-vit.gt.tc/quiz/';
 $('#joinUrl').textContent = quizUrl.replace(/^https?:\/\//, '');
 $('#qr').innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=0&data=${encodeURIComponent(quizUrl)}" width="134" height="134" alt="QR code to open the quiz" onerror="this.parentNode.classList.remove('on')">`;
 $('#qr').classList.add('on');
