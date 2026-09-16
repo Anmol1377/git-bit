@@ -70,6 +70,17 @@ warning below for why. Push the whole repo to the web root there.
 3. **Play** at https://git-vit.gt.tc/quiz/ and put https://git-vit.gt.tc/quiz/host.html on
    the projector.
 
+### Admin panel
+
+`api/-prvite.php` is a standalone page — its own credentials, its own connection, nothing
+shared with `quiz.php`. Fill in the constants at the top, upload it beside `quiz.php`, and
+open it in a browser. It can start a new session, delete a player (and their answers), empty
+or delete a session, wipe everything, or drop the tables so `quiz.php` rebuilds them.
+
+It is password-gated on `$ADMIN_PASS`, and the destructive actions need `DELETE` or `DROP`
+typed into a box before they do anything. Once you put the live database password in it,
+keep that copy off GitHub — the file in this repo ships with placeholders.
+
 Set `host_key` in `api/config.php` to something only you know — the dashboard asks for it
 before starting a new session, so nobody can wipe the board mid-talk.
 
