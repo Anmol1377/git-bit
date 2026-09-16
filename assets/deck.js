@@ -50,9 +50,12 @@ function enter(s) {
   if (t === 'Why GitHub') countUp($$('[data-count]', s));
   if (t === 'The waste') countUp([['#mA', 21], ['#mB', 6], ['#mC', 600]].map(([sel, v]) => { const el = $(sel); el.dataset.count = v; return el; }));
   if (t === 'Thanks') confetti();
+  if (t === 'Quiz') $('#talkVideo')?.load();        // warm the buffer one slide early
   if (t === 'Video') {
     const v = $('#talkVideo');
     v.currentTime = 0;
+    v.muted = false;                                  // sound on; never quietly fall back to muted
+    v.volume = 1;
     v.play().then(() => $('#vidPlay').hidden = true)
             .catch(() => $('#vidPlay').hidden = false);   // blocked without a gesture — show the button
   }
